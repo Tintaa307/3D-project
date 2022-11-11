@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react"
 import * as THREE from "three"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js"
-import { AnimationMixer, LoopRepeat } from "three"
+import { AnimationMixer, LoopRepeat, AnimationClip } from "three"
 
 const Object = () => {
   const canvasRef = useRef(null)
@@ -39,34 +39,44 @@ const Object = () => {
 
     let object = new GLTFLoader()
     let mixer
-    object.load(
-      "/ANIMACION REMO.gltf",
-      function (gltf) {
-        let modelGltf = gltf.scene
-        modelGltf.scale.set(0.1, 0.1, 0.1)
-        scene.add(modelGltf)
-        mixer = new THREE.AnimationMixer(modelGltf)
-        const clips = gltf.animations
-        const action = mixer.clipAction(clips[0])
-        action.play()
-      },
-      function (onProgress) {
-        console.log(onProgress)
-      },
-      function (error) {
-        console.log(error)
-      }
-    )
+    const loadModel = () => {
+      object.load(
+        "/ANIMACION SENTADILLA.gltf",
+        function (gltf) {
+          let modelGltf = gltf.scene
+          modelGltf.scale.set(0.1, 0.1, 0.1)
+          scene.add(modelGltf)
+          mixer = new THREE.AnimationMixer(modelGltf)
+          const clips = gltf.animations
+          clips.forEach(clip => {
+            const action = mixer.clipAction(clip)
+            const frames = action._clip.tracks
+            frames.forEach(frame => {
+              console.log(frame)
+            })
+            action.play()
+          })
+        },
+        function (onProgress) {
+          console.log(onProgress)
+        },
+        function (error) {
+          console.log(error)
+        }
+      )
+    }
     const clock = new THREE.Clock()
     const animate = () => {
       if (mixer) {
-        mixer.update(clock.getDelta())
+        const delta = clock.getDelta()
+        mixer.update(delta)
       }
       requestAnimationFrame(animate)
       renderer.render(scene, camera)
     }
+    loadModel()
     animate()
-  }, [])
+  }, [canvasRef])
 
   return (
     <div className="container-canvas">
