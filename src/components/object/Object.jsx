@@ -40,16 +40,15 @@ const Object = () => {
     let object = new GLTFLoader()
     let mixer
     object.load(
-      "/chicamodelo/scene.gltf",
+      "/ANIMACION REMO.gltf",
       function (gltf) {
         let modelGltf = gltf.scene
         modelGltf.scale.set(0.1, 0.1, 0.1)
         scene.add(modelGltf)
         mixer = new THREE.AnimationMixer(modelGltf)
         const clips = gltf.animations
-        clips.forEach((clip) => {
-          mixer.clipAction(clip).play()
-        })
+        const action = mixer.clipAction(clips[0])
+        action.play()
       },
       function (onProgress) {
         console.log(onProgress)
